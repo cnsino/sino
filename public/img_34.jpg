@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://static.readdy.ai/web/favicon-180.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="https://static.readdy.ai/web/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="https://static.readdy.ai/web/favicon-16.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Readdy</title>
+    <script>
+      // 预加载
+      try{
+      const READDY_PRELOAD = {};
+      READDY_PRELOAD['toggles'] = fetch('/api/public/toggles', {
+        method: 'GET'
+      }).then((res) => res.json());
+        window.READDY_PRELOAD = READDY_PRELOAD;
+      } catch (error) {
+        console.error('Preload proxy error:', error);
+      }
+    </script>
+    <script type="module" crossorigin src="https://static.readdy.ai/static/index-C8vxPHlS.js"></script>
+    <link rel="stylesheet" crossorigin href="https://static.readdy.ai/static/index-DuioXS_p.css">
+  </head>
+  <body>
+    <div outline="0" id="app"></div>
+  </body>
+</html>

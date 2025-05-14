@@ -1,0 +1,61 @@
+# 构建 VitePress 站点并将其部署到 GitHub Pages 的示例工作流程
+#
+name: Deploy Vite site to Pages
+
+on:
+  # 在针对 `main` 分支的推送上运行。如果你
+  # 使用 `master` 分支作为默认分支，请将其更改为 `master`
+  push:
+    branches: [main]
+
+  # 允许你从 Actions 选项卡手动运行此工作流程
+  workflow_dispatch:
+
+# 设置 GITHUB_TOKEN 的权限，以允许部署到 GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# 只允许同时进行一次部署，跳过正在运行和最新队列之间的运行队列
+# 但是，不要取消正在进行的运行，因为我们希望允许这些生产部署完成
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # 构建工作
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 如果未启用 lastUpdated，则不需要
+      - uses: pnpm/action-setup@v3 # 如果使用 pnpm，请取消注释
+      # - uses: oven-sh/setup-bun@v1 # 如果使用 Bun，请取消注释
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm # 或 pnpm / yarn
+      # - name: Setup Pages
+      #   uses: actions/configure-pages@v4
+      # Install dependencies
+      - name: Install dependencies
+        run: pnpm install
+
+      # Build the project (根据你的构建工具修改此步骤)
+      - name: Build the project
+        run: pnpm build # 如果你使用的是其他构建工具，请根据需要修改此命令
+
+      # Deploy to Vercel Pages
+      - name: Deploy to Vercel Pages
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }} # 必须的 Vercel Token
+          github-token: ${{ secrets.GITHUB_TOKEN }} # 可选，GitHub Token
+          vercel-args: '--prod' # 可选，指示部署为生产环境
+          vercel-org-id: ${{ secrets.ORG_ID }} # 必须的 Vercel 组织 ID
+          vercel-project-id: ${{ secrets.PROJECT_ID }} # 必须的 Vercel 项目 ID
+          working-directory: ./dist # 部署时指定构建产物的路径
